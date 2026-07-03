@@ -1,0 +1,18 @@
+{
+  "name": "freno-de-mano",
+  "version": "1.0.0",
+  "description": "🖐️ Hook de seguridad para Claude Code: frena comandos peligrosos antes de que se ejecuten y explica el riesgo en español sencillo.",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "keywords": [
+    "claude-code",
+    "hooks",
+    "seguridad",
+    "safety",
+    "pretooluse",
+    "espanol"
+  ],
+  "author": "Charly — Imperio Agéntico",
+  "license": "MIT"
+}

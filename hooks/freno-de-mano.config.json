@@ -1,0 +1,168 @@
+{
+  "_ayuda": "Catálogo de El Freno de Mano. Agrega tus propios patrones aquí sin tocar el código. Cada entrada: { patron: regex (insensible a mayúsculas por defecto), razon: explicación en español sencillo, sensibleMayusculas: true si la mayúscula importa (ej. git branch -D) }. Niveles: critico = bloqueo total, alto = pide confirmación, medio = advertencia visible pero deja continuar. rutas_sensibles aplica a Read/Edit/Write y a comandos que las mencionen.",
+
+  "critico": [
+    {
+      "patron": "\\brm\\s+(-[a-zA-Z]+\\s+)*([\"']?)(\\/\\*?|~\\/?|\\$HOME|\\*|\\.\\/?)\\2\\s*$",
+      "razon": "Esto borra todo el directorio actual, tu carpeta de usuario o el sistema completo, y no hay vuelta atrás. Es el error clásico de estar parado un nivel más arriba de donde creías."
+    },
+    {
+      "patron": "\\bmv\\s+[^|;&]+\\s+\\/dev\\/null",
+      "razon": "Esto manda tus archivos al \"agujero negro\" del sistema — se destruyen sin posibilidad de recuperarlos."
+    },
+    {
+      "patron": "\\bdd\\s+[^|;&]*\\bof=\\/dev\\/(sd[a-z]?|hd[a-z]?|nvme|disk)",
+      "razon": "Esto sobreescribe el disco físico directamente. Se pierde el sistema operativo y todos los datos."
+    },
+    {
+      "patron": "\\bmkfs(\\.[a-z0-9]+)?\\s+[^|;&]*\\/dev\\/",
+      "razon": "Esto formatea un disco completo — borra absolutamente todo lo que contiene."
+    },
+    {
+      "patron": ":\\(\\)\\s*\\{\\s*:\\s*\\|\\s*:\\s*&\\s*\\}\\s*;",
+      "razon": "Esto es una fork bomb: satura el procesador y la memoria hasta congelar la computadora. Solo se arregla reiniciando a la fuerza."
+    },
+    {
+      "patron": "Remove-Item(?=[^\\n]*-Recurse)(?=[^\\n]*-Force)[^\\n]*(\\s|[\"'])(C:[\\\\\\/]?|~|\\$HOME|\\$env:USERPROFILE|\\*|\\.)([\"']|\\s|$)",
+      "razon": "Esto es el rm -rf de Windows: borra recursivamente una ruta enorme (C:\\, tu carpeta de usuario o el directorio actual completo) y con -Force no pregunta nada."
+    },
+    {
+      "patron": "Format-Volume",
+      "razon": "Esto formatea un disco completo de Windows — borra todo lo que contiene."
+    },
+    {
+      "patron": "Clear-Disk\\b[^\\n]*-RemoveData",
+      "razon": "Esto borra las particiones y los datos del disco sin posibilidad de deshacerlo."
+    },
+    {
+      "patron": "Remove-Partition\\b[^\\n]*-Confirm:\\s*\\$false",
+      "razon": "Esto elimina una partición entera del disco sin preguntar."
+    },
+    {
+      "patron": "git\\s+push\\b(?=[^\\n]*(--force(?!-with-lease)\\b|\\s-f\\b))(?=[^\\n]*\\b(main|master)\\b)",
+      "razon": "Esto sobreescribe el historial remoto de main/master. Si alguien más ya trabajó sobre esa rama, su trabajo desaparece para siempre."
+    },
+    {
+      "patron": "\\bDROP\\s+(TABLE|DATABASE|SCHEMA)\\b",
+      "razon": "Esto borra una tabla o una base de datos completa. Sin backup, la pérdida es total."
+    },
+    {
+      "patron": "\\bTRUNCATE\\s+TABLE\\b",
+      "razon": "Esto vacía todos los registros de una tabla de un solo golpe, sin filtro ni aviso."
+    },
+    {
+      "patron": "\\bDELETE\\s+FROM\\s+(?![^;\\n]*\\bWHERE\\b)[^;\\n]+",
+      "razon": "Esto borra TODAS las filas de la tabla porque no tiene filtro WHERE — el error clásico de olvidar el filtro."
+    },
+    {
+      "patron": "DISABLE\\s+ROW\\s+LEVEL\\s+SECURITY",
+      "razon": "Esto apaga la seguridad por filas (RLS) y deja la tabla completamente expuesta a través de la API pública de Supabase."
+    },
+    {
+      "patron": "\\bforge\\s+init\\b[^\\n]*--force",
+      "razon": "Esto puede sobreescribir un proyecto existente por completo. Así se perdió un sistema real de 12 agentes."
+    },
+    {
+      "patron": "terraform\\s+(destroy\\b|apply\\s+[^\\n]*-destroy)",
+      "razon": "Esto elimina infraestructura real (servidores, bases de datos, redes) definida en Terraform."
+    },
+    {
+      "patron": "aws\\s+ec2\\s+(terminate-instances|delete-volume)\\b",
+      "razon": "Esto apaga y elimina servidores o discos reales en AWS. Ya ha pasado que un agente de IA borró producción y backups en segundos."
+    },
+    {
+      "patron": "\\b(railway\\s+(down|delete)|doctl\\s+compute\\s+(droplet|volume)\\s+delete|gcloud\\s+compute\\s+(instances|disks)\\s+delete)\\b",
+      "razon": "Esto elimina infraestructura real en la nube (Railway, DigitalOcean o Google Cloud) — servidores o discos con datos de verdad."
+    }
+  ],
+
+  "alto": [
+    {
+      "patron": "chmod\\s+(-[a-zA-Z]+\\s+)*777\\s+[\"']?\\/[\"']?\\s*$",
+      "razon": "Esto abre los permisos de TODO el sistema — cualquier proceso podría leer o modificar cualquier archivo."
+    },
+    {
+      "patron": "chown\\s+(-[a-zA-Z]+\\s+)*root(:root)?\\s+[\"']?\\/[\"']?\\s*$",
+      "razon": "Esto cambia el dueño de todos los archivos del sistema y puede romper servicios que dependen de sus permisos."
+    },
+    {
+      "patron": "\\bkill\\s+-9\\s+-1\\b",
+      "razon": "Esto mata casi todos tus procesos de golpe — se pierde cualquier trabajo no guardado."
+    },
+    {
+      "patron": "\\b(curl|wget)\\b[^|\\n]*\\|\\s*(sudo\\s+)?(bash|sh|zsh)\\b",
+      "razon": "Esto descarga código de internet y lo ejecuta sin que nadie lo revise primero — la puerta de entrada clásica del malware."
+    },
+    {
+      "patron": "Remove-Item\\s+[^\\n]*Env:",
+      "razon": "Esto borra variables de entorno del sistema y puede romper todo lo que depende de ellas (herramientas, MCPs, scripts)."
+    },
+    {
+      "patron": "(Win32_ShadowCopy|vssadmin\\s+delete\\s+shadows)",
+      "razon": "Esto elimina los puntos de restauración de Windows — la misma técnica que usa el ransomware antes de cifrar tus archivos."
+    },
+    {
+      "patron": "git\\s+reset\\s+[^\\n]*--hard",
+      "razon": "Esto descarta permanentemente todos los cambios que no hayas guardado con commit."
+    },
+    {
+      "patron": "git\\s+clean\\s+-[a-zA-Z]*f",
+      "razon": "Esto borra todos los archivos que git no rastrea — incluye configs locales y cosas que nunca hiciste commit."
+    },
+    {
+      "patron": "git\\s+push\\b(?=[^\\n]*(--force(?!-with-lease)\\b|\\s-f\\b))",
+      "razon": "Esto sobreescribe el historial remoto de la rama. Si alguien más trabajó sobre ella, sus commits pueden desaparecer."
+    },
+    {
+      "patron": "supabase\\s+db\\s+reset",
+      "razon": "Esto resetea la base de datos a partir de las migraciones locales — se pierden los datos reales insertados después."
+    },
+    {
+      "patron": "\\bnpm\\s+publish\\b",
+      "razon": "Esto publica el paquete al registro público de npm. Sin revisar qué incluye, puede subir carpetas con configuraciones y hasta credenciales."
+    },
+    {
+      "patron": "\\bfind\\s+[^\\n]*-delete\\b",
+      "razon": "Esto borra archivos según un filtro que es fácil de escribir mal — un path mal filtrado y borra mucho más de lo que pediste."
+    },
+    {
+      "patron": "\\becho\\s+[^\\n]*\\$(env:)?[A-Za-z_]*(KEY|SECRET|TOKEN|PASSWORD|PASS)\\b",
+      "razon": "Esto imprime un secreto en pantalla — una vez que aparece en la sesión, puede terminar citado, logueado o commiteado sin querer."
+    }
+  ],
+
+  "medio": [
+    {
+      "patron": "(^|;|&&|\\|\\|)\\s*>\\s*\\S+",
+      "razon": "Esa redirección vacía el archivo por completo sin ningún aviso — es muy fácil hacerlo sin querer."
+    },
+    {
+      "patron": "Stop-Process\\b[^\\n]*-Force",
+      "razon": "Matar procesos a la fuerza puede colgar el sistema o hacerte perder trabajo no guardado."
+    },
+    {
+      "patron": "git\\s+branch\\b[^\\n]*\\s-D\\b",
+      "sensibleMayusculas": true,
+      "razon": "La -D mayúscula borra la rama sin verificar si tenía cambios sin mergear (la -d minúscula sí verifica)."
+    },
+    {
+      "patron": "git\\s+(checkout|restore)\\s+(--\\s+)?\\.\\s*$",
+      "razon": "Esto descarta TODOS tus cambios locales sin confirmar cuáles son."
+    },
+    {
+      "patron": "git\\s+add\\s+(\\.|-A|--all)\\s*$",
+      "razon": "Agregar todo de golpe puede meter al commit archivos con secretos (.env, .mcp.json). Revisa con git status qué se va a incluir."
+    }
+  ],
+
+  "rutas_sensibles": [
+    ".env",
+    ".mcp.json",
+    "credentials",
+    "service_role",
+    "id_rsa",
+    ".npmrc",
+    "secrets",
+    ".pem"
+  ]
+}
