@@ -39,7 +39,7 @@ Los comandos normales (`ls`, `git status`, `npm run dev`...) pasan sin ninguna f
 Necesitas [Node.js](https://nodejs.org) (que ya tienes si usas Claude Code).
 
 ```bash
-git clone https://github.com/TU_USUARIO/freno-de-mano.git
+git clone https://github.com/JuanIA-sketch/freno-de-mano.git
 cd freno-de-mano
 node install.js
 ```
@@ -116,6 +116,6 @@ Corre 67 casos simulados (no ejecuta ningún comando real — solo le pasa al ho
 
 ---
 
-Hecho con una cicatriz real por [Charly](https://github.com/TU_USUARIO) para la comunidad **Imperio Agéntico** 🏛️ — logro #1 del reto de 30 días.
+Hecho con una cicatriz real por [Charly](https://github.com/JuanIA-sketch) para la comunidad **Imperio Agéntico** 🏛️ — logro #1 del reto de 30 días.
 
 Licencia MIT — úsalo, modifícalo, compártelo.
