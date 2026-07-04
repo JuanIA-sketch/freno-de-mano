@@ -1,5 +1,9 @@
 # 🖐️ El Freno de Mano
 
+![Tests](https://img.shields.io/badge/tests-67%20passing-brightgreen)
+![Node](https://img.shields.io/badge/node-%3E%3D14-339933?logo=node.js&logoColor=white)
+![Licencia](https://img.shields.io/badge/licencia-MIT-blue)
+
 **Un hook de seguridad para Claude Code que frena los comandos peligrosos antes de que se ejecuten — y te explica el riesgo en español sencillo.**
 
 ---

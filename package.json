@@ -5,6 +5,9 @@
   "scripts": {
     "test": "node test/test.js"
   },
+  "engines": {
+    "node": ">=14"
+  },
   "keywords": [
     "claude-code",
     "hooks",
