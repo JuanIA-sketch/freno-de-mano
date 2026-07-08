@@ -106,7 +106,9 @@ const casos = [
   { tool: 'PowerShell', input: { command: 'Remove-Item -Recurse -Force node_modules' }, espera: 'allow' },
   { tool: 'Bash', input: { command: 'psql -c "DELETE FROM leads WHERE id = 3;"' }, espera: 'allow' },
   { tool: 'Read', input: { file_path: 'C:/proyectos/app/src/index.ts' }, espera: 'allow' },
-  { tool: 'Edit', input: { file_path: '/home/user/app/README.md' }, espera: 'allow' }
+  { tool: 'Edit', input: { file_path: '/home/user/app/README.md' }, espera: 'allow' },
+  { tool: 'Bash', input: { command: "python -c \"import os; print(os.environ['APPDATA'])\"" }, espera: 'allow' },
+  { tool: 'Bash', input: { command: 'node -e "console.log(process.env.API_KEY)"' }, espera: 'allow' }
 ];
 
 let fallos = 0;

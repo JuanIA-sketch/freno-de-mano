@@ -77,6 +77,19 @@ function buscarMatch(lista, texto) {
   return null;
 }
 
+// Evita falsos positivos como "os.environ" o "process.env" (contienen la
+// subcadena ".env" pero no son un archivo real). Solo cuenta si la ruta
+// aparece como token suelto: no pegada a un carácter de palabra antes o
+// después (así cubre también "precedido de / o \").
+function escaparRegex(cadena) {
+  return String(cadena).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function esRutaSensibleReal(texto, ruta) {
+  const patron = new RegExp('(?<!\\w)' + escaparRegex(ruta) + '(?!\\w)', 'i');
+  return patron.test(texto);
+}
+
 function main() {
   let crudo = '';
   try {
@@ -116,9 +129,8 @@ function main() {
     }
 
     // Comandos que tocan archivos con secretos (cat .env, type .mcp.json...)
-    const comandoMinusculas = comando.toLowerCase();
     for (const ruta of config.rutas_sensibles || []) {
-      if (comandoMinusculas.includes(String(ruta).toLowerCase())) {
+      if (esRutaSensibleReal(comando, ruta)) {
         registrar('ALTO', herramienta, comando);
         salir(decision('ask',
           '⚠️ Este comando toca "' + ruta + '", que suele contener secretos o credenciales. ' +
@@ -148,9 +160,8 @@ function main() {
     const rutaArchivo = String(entrada.file_path || '');
     if (!rutaArchivo) salir();
 
-    const rutaMinusculas = rutaArchivo.toLowerCase();
     for (const ruta of config.rutas_sensibles || []) {
-      if (rutaMinusculas.includes(String(ruta).toLowerCase())) {
+      if (esRutaSensibleReal(rutaArchivo, ruta)) {
         registrar('ALTO', herramienta, rutaArchivo);
         const consecuencia = herramienta === 'Read'
           ? 'Si Claude lo lee, su contenido (incluidas claves y tokens) queda en la conversación.'
